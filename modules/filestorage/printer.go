@@ -40,7 +40,7 @@ func DisplayEntries(db *sql.DB) {
 			PrintDecryption(src, dst)
 			PrintExtract(src, dst)
 		default:
-			log.Println("File: ", id, " ", tag, " ", src, " ", dst)
+			log.Println("File: ", tag, " ", src, " ", dst)
 		}
 
 	}
