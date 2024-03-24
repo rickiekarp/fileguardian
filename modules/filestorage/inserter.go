@@ -12,6 +12,8 @@ func AddToStorage(db *sql.DB, files []File) {
 	for _, file := range files {
 		InsertEntry(db, file.Tag, file.Src, file.Dst)
 	}
+
+	log.Println("Done!")
 }
 
 func InsertEntry(db *sql.DB, tag string, src string, dst string) {

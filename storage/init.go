@@ -14,7 +14,7 @@ var printHelp = flag.Bool("h", false, "print help")
 
 var ShouldCreateStorage = flag.Bool("create", false, "create storage file")
 var ShouldListStorage = flag.Bool("list", true, "list storage content")
-var ShouldAddToStorage = flag.Bool("add", false, "list storage content")
+var ShouldAddToStorage = flag.Bool("add", false, "add content to storage")
 var StorageName = flag.String("name", "storage", "storage name")
 var DataPath = flag.String("data", "", "data path")
 
