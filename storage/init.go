@@ -10,6 +10,8 @@ import (
 	"git.rickiekarp.net/rickie/fileguardian/modules/filestorage"
 )
 
+var Version = "development" // Version set during go build using ldflags
+
 var printHelp = flag.Bool("h", false, "print help")
 
 var ShouldCreateStorage = flag.Bool("create", false, "create storage file")
