@@ -21,7 +21,7 @@ func LoadDataFromDisk(path string) []File {
 		log.Fatal(err)
 	}
 
-	now := time.Now()
+	now := time.Now().UTC()
 
 	// calculate seconds since midnight
 	midnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
