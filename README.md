@@ -7,9 +7,16 @@ Creates a new storage file (with name)
 go run main.go -create (-name=foo)
 ```
 
-Populate storage with data
+### Populate storage
+
+Populate storage with data (folder)
 ```
 go run main.go -add -data=/home/user/some/path
+```
+
+Populate storage with data (file)
+```
+go run main.go -add -data=/home/user/some.file
 ```
 
 ### Read storage data
