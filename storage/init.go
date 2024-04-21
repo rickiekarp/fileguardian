@@ -14,12 +14,6 @@ var Version = "development" // Version set during go build using ldflags
 
 var printHelp = flag.Bool("h", false, "print help")
 
-var ShouldCreateStorage = flag.Bool("create", false, "create storage file")
-var ShouldListStorage = flag.Bool("list", true, "list storage content")
-var ShouldAddToStorage = flag.Bool("add", false, "add content to storage")
-var StorageName = flag.String("name", "storage", "storage name")
-var DataPath = flag.String("data", "", "data path")
-
 var StoragePtr *sql.DB
 
 func Init() {
@@ -30,7 +24,7 @@ func Init() {
 		os.Exit(0)
 	}
 
-	if *ShouldCreateStorage {
+	if *config.ShouldCreateStorage {
 		CreateDatabase()
 		OpenDatabase()
 		filestorage.CreateTable(StoragePtr)
@@ -40,7 +34,7 @@ func Init() {
 
 func CreateDatabase() {
 	log.Println("Creating database...")
-	file, err := os.Create(*StorageName + "." + config.Extension)
+	file, err := os.Create(*config.StorageName + "." + config.Extension)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -49,5 +43,5 @@ func CreateDatabase() {
 }
 
 func OpenDatabase() {
-	StoragePtr, _ = sql.Open("sqlite3", "./"+*StorageName+"."+config.Extension)
+	StoragePtr, _ = sql.Open("sqlite3", "./"+*config.StorageName+"."+config.Extension)
 }

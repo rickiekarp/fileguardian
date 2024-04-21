@@ -4,6 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
+
+	"git.rickiekarp.net/rickie/fileguardian/config"
 )
 
 func DisplayEntries(db *sql.DB) {
@@ -30,7 +33,9 @@ func DisplayEntries(db *sql.DB) {
 
 		switch *InstructionType {
 		case "encrypt":
-			PrintCompression(src, dst)
+			if !*config.ShouldSkipCompression {
+				PrintCompression(src, dst)
+			}
 			if *EncryptionRecipient == "" {
 				log.Fatal("No recipient set, ignoring encryption instructions! Please provide the encryptionRecipient flag")
 			} else {
@@ -38,7 +43,9 @@ func DisplayEntries(db *sql.DB) {
 			}
 		case "decrypt":
 			PrintDecryption(src, dst)
-			PrintExtract(src, dst)
+			if !*config.ShouldSkipCompression {
+				PrintExtract(src, dst)
+			}
 		default:
 			log.Println("File: ", tag, " ", src, " ", dst)
 		}
@@ -49,21 +56,39 @@ func DisplayEntries(db *sql.DB) {
 /// Encryption helper functions
 
 func PrintCompression(src string, dst string) {
-	fmt.Println("tar cJPf " + src + ".tar.xz " + src)
+	// ignore file that seems to compressed already
+	if strings.HasSuffix(src, "."+config.CompressExtension) {
+		return
+	}
+
+	fmt.Println("tar cJPf " + src + "." + config.CompressExtension + " " + src)
 }
 
 func PrintEncryption(src string, dst string, recipient string) {
-	fmt.Println("gpg --output " + dst + " --encrypt --recipient " + recipient + " " + src + ".tar.xz")
+
+	if !strings.HasSuffix(src, "."+config.CompressExtension) && !*config.ShouldSkipCompression {
+		src += "." + config.CompressExtension
+	}
+
+	fmt.Println("gpg --output " + dst + " --encrypt --recipient " + recipient + " " + src)
 }
 
 /// Decryption helper functions
 
 func PrintDecryption(src string, dst string) {
-	fmt.Println("gpg --output " + src + ".tar.xz --decrypt " + dst)
+	if !strings.HasSuffix(src, "."+config.CompressExtension) && !*config.ShouldSkipCompression {
+		fmt.Println("gpg --output " + src + ".tar.xz --decrypt " + dst)
+		return
+	}
+
+	fmt.Println("gpg --output " + src + " --decrypt " + dst)
 }
 
 func PrintExtract(src string, dst string) {
-	fmt.Println("tar -xf " + src + ".tar.xz")
+	if !strings.HasSuffix(src, "."+config.CompressExtension) {
+		src += "." + config.CompressExtension
+	}
+	fmt.Println("tar -xf " + src)
 }
 
 func PrintData(files []File) {
