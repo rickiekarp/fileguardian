@@ -3,6 +3,7 @@ package storage
 import (
 	"database/sql"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 
@@ -12,15 +13,18 @@ import (
 
 var Version = "development" // Version set during go build using ldflags
 
-var printHelp = flag.Bool("h", false, "print help")
-
 var StoragePtr *sql.DB
 
 func Init() {
 	flag.Parse()
 
-	if *printHelp {
+	if *config.PrintHelp {
 		config.PrintUsage()
+		os.Exit(0)
+	}
+
+	if *config.PrintVersion {
+		fmt.Println(Version)
 		os.Exit(0)
 	}
 
