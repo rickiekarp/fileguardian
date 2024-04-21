@@ -5,6 +5,9 @@ GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 BUILD_PATH=build
 
+clean:
+	rm -rf build
+
 buildARM64v7:
 	CGO_ENABLED=1 GOOS=linux GOARCH=arm64 GOARM=7 CC=aarch64-linux-gnu-gcc \
 	go build \
