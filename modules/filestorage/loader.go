@@ -55,3 +55,17 @@ func LoadDataFromDisk(path string) []File {
 
 	return files
 }
+
+func IsValidPath(path string) (bool, bool) {
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		log.Println(err)
+		return false, false
+	}
+
+	if fileInfo.IsDir() {
+		return true, false
+	}
+
+	return true, true
+}

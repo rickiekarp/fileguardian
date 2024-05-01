@@ -21,7 +21,8 @@ func DisplayEntries(db *sql.DB) {
 
 	row, err := db.Query(lookupQuery)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 	defer row.Close()
 	for row.Next() {
@@ -49,8 +50,29 @@ func DisplayEntries(db *sql.DB) {
 		default:
 			log.Println("File: ", tag, " ", src, " ", dst)
 		}
-
 	}
+}
+
+func ReadEntry(db *sql.DB, category string, fileName string) (*File, error) {
+	var lookupQuery = "SELECT * FROM files WHERE " + category + " = '" + fileName + "'"
+	row, err := db.Query(lookupQuery)
+	if err != nil {
+		return nil, err
+	}
+	defer row.Close()
+
+	if row.Next() {
+		var id int
+		var tag string
+		var src string
+		var dst string
+		row.Scan(&id, &tag, &src, &dst)
+
+		file := File{Tag: tag, Src: src, Dst: dst}
+		return &file, nil
+	}
+
+	return nil, nil
 }
 
 /// Encryption helper functions

@@ -10,13 +10,13 @@ func AddToStorage(db *sql.DB, files []File) {
 
 	// create slice of files to add to the storage
 	for _, file := range files {
-		InsertEntry(db, file.Tag, file.Src, file.Dst)
+		insertEntry(db, file.Tag, file.Src, file.Dst)
 	}
 
 	log.Println("Done!")
 }
 
-func InsertEntry(db *sql.DB, tag string, src string, dst string) {
+func insertEntry(db *sql.DB, tag string, src string, dst string) {
 	insertSQL := `INSERT INTO files(tag, src, dst) VALUES (?, ?, ?)`
 	statement, err := db.Prepare(insertSQL)
 

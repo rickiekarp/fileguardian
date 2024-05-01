@@ -29,14 +29,14 @@ func Init() {
 	}
 
 	if *config.ShouldCreateStorage {
-		CreateDatabase()
+		createDatabase()
 		OpenDatabase()
 		filestorage.CreateTable(StoragePtr)
 		StoragePtr.Close()
 	}
 }
 
-func CreateDatabase() {
+func createDatabase() {
 	log.Println("Creating database...")
 	file, err := os.Create(*config.StorageName + "." + config.Extension)
 	if err != nil {
