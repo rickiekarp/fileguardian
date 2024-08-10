@@ -6,54 +6,54 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"git.rickiekarp.net/rickie/fileguardian/config"
 )
 
-func LoadDataFromDisk(path string) []File {
+func LoadDataFromDisk(path string) ([]File, error) {
 	files := []File{}
 
 	// This returns an *os.FileInfo type
 	fileInfo, err := os.Stat(path)
 	if err != nil {
-		log.Fatal(err)
+		return files, err
 	}
 
 	now := time.Now().UTC()
 
-	// calculate seconds since midnight
-	midnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
-	timeSinceMidnight := now.Sub(midnight)
-
-	// create a tag that represents the current processing job
-	var processTag = now.Format("06") + strconv.Itoa(now.YearDay()) + strconv.Itoa(int(timeSinceMidnight.Seconds()))
+	// create a processId that represents the current processing job
+	var processId = strconv.Itoa(int(config.StartupTime.Unix())) + "-" + strconv.Itoa(os.Getpid())
 
 	// populate files slice
 	if fileInfo.IsDir() {
-		dirEntries, err := os.ReadDir(path)
-		if err != nil {
-			log.Fatal(err)
-		}
 
-		// create slice of files to add to the storage
-		for idx, e := range dirEntries {
-			// exclude directories and dotfiles
-			if e.IsDir() || strings.HasPrefix(e.Name(), ".") {
-				continue
-			}
-
-			bs := []byte(processTag + "-" + strconv.Itoa(idx))
-			files = append(files, File{Tag: processTag, Src: e.Name(), Dst: fmt.Sprintf("%x", md5.Sum(bs)) + "." + config.DataExtension})
-		}
+		files = append(files,
+			File{
+				ProcessId: processId,
+				Type:      "dir",
+				Src:       fileInfo.Name(),
+				Dst:       fmt.Sprintf("%x", getMd5Sum(processId, time.Now().UTC().Nanosecond())) + "." + config.DataExtension,
+				CreatedAt: now.Unix(),
+			},
+		)
 
 	} else {
-		bs := []byte(processTag + "-" + strconv.Itoa(0))
-		files = append(files, File{Tag: processTag, Src: fileInfo.Name(), Dst: fmt.Sprintf("%x", md5.Sum(bs)) + "." + config.DataExtension})
+		files = append(files,
+			File{
+				ProcessId: processId,
+				Type:      "file",
+				Src:       fileInfo.Name(),
+				Dst:       fmt.Sprintf("%x", getMd5Sum(processId, time.Now().UTC().Nanosecond())) + "." + config.DataExtension,
+				CreatedAt: now.Unix(),
+			})
 	}
 
-	return files
+	return files, nil
+}
+
+func getMd5Sum(processId string, idx int) [16]byte {
+	return md5.Sum([]byte(processId + "-" + strconv.Itoa(idx)))
 }
 
 func IsValidPath(path string) (bool, bool) {
