@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"git.rickiekarp.net/rickie/fileguardian/config"
@@ -57,7 +58,7 @@ func main() {
 			} else {
 
 				for _, storedFile := range acc.Files[config.StorageContext] {
-					if storedFile.Src == arg {
+					if storedFile.Src == filepath.Base(arg) {
 						foundFile = &storedFile
 						break
 					}

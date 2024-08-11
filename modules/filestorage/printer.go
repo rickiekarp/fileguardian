@@ -10,6 +10,10 @@ import (
 
 func DisplayEntries(account Storage) {
 
+	if len(account.Files[config.StorageContext]) == 0 {
+		fmt.Println("No files found for context:", config.StorageContext)
+	}
+
 	for _, value := range account.Files[config.StorageContext] {
 		switch *config.InstructionType {
 		case "encrypt":
@@ -27,7 +31,7 @@ func DisplayEntries(account Storage) {
 				PrintExtract(value.Src, value.Dst)
 			}
 		default:
-			log.Println("File: ", value.ProcessId, " ", value.Type, " ", value.Src, " ", value.Dst)
+			fmt.Println(value.Type, " ", value.Src, " ", value.Dst)
 		}
 	}
 }
