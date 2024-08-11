@@ -57,10 +57,21 @@ func main() {
 				}
 			} else {
 
+				// look for the file in the hashed data
 				for _, storedFile := range acc.Files[config.StorageContext] {
-					if storedFile.Src == filepath.Base(arg) {
+					if storedFile.Dst == filepath.Base(arg) {
 						foundFile = &storedFile
 						break
+					}
+				}
+
+				// if the file still can't be found, look into the Src
+				if foundFile == nil {
+					for _, storedFile := range acc.Files[config.StorageContext] {
+						if storedFile.Src == filepath.Base(arg) {
+							foundFile = &storedFile
+							break
+						}
 					}
 				}
 
@@ -89,7 +100,6 @@ func main() {
 		}
 
 	} else {
-		// list existing stuff
 		filestorage.DisplayEntries(*acc)
 	}
 }

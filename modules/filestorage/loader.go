@@ -33,7 +33,7 @@ func LoadDataFromDisk(path string) ([]File, error) {
 				ProcessId: processId,
 				Type:      "dir",
 				Src:       fileInfo.Name(),
-				Dst:       fmt.Sprintf("%x", getMd5Sum(processId, time.Now().UTC().Nanosecond())) + "." + config.DataExtension,
+				Dst:       fmt.Sprintf("%x", getMd5Sum(processId, time.Now().UTC().Nanosecond())),
 				CreatedAt: now.Unix(),
 			},
 		)
