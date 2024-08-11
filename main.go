@@ -27,11 +27,12 @@ func main() {
 	arguments := flag.Args()
 
 	var acc *filestorage.Storage
-	if _, err := os.Stat(config.StorageFileName); errors.Is(err, os.ErrNotExist) {
+	storageFile := config.GetStorageFile()
+	if _, err := os.Stat(storageFile); errors.Is(err, os.ErrNotExist) {
 		acc, _ = filestorage.Generate()
 		filestorage.Persist(*acc)
 	} else {
-		acc, _ = filestorage.Load()
+		acc, _ = filestorage.Load(storageFile)
 	}
 
 	if len(arguments) > 0 {
@@ -76,7 +77,6 @@ func main() {
 				}
 
 				if foundFile != nil {
-					// if yes -> print decoded
 					fmt.Println(foundFile.Dst)
 					continue
 				} else {

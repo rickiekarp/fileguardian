@@ -14,13 +14,6 @@ import (
 
 var Profile *Storage
 
-type Storage struct {
-	Id           string
-	CreationDate int64
-	LastModified int64
-	Files        map[string][]File
-}
-
 func Generate() (*Storage, error) {
 
 	initDate := time.Now().UTC().Unix()
@@ -52,15 +45,16 @@ func Persist(account Storage) {
 	// The serialized data can now be found in the buffer
 	serializedData := b.Bytes()
 
-	err := os.WriteFile(config.StorageFileName, serializedData, 0644)
+	storageFile := config.GetStorageFile()
+	err := os.WriteFile(storageFile, serializedData, 0644)
 	if err != nil {
 		logrus.Println("Could not write file", config.StorageFileName)
 	}
 }
 
-func Load() (*Storage, error) {
+func Load(storageFile string) (*Storage, error) {
 
-	file, err := os.Open(config.StorageFileName)
+	file, err := os.Open(storageFile)
 	if err != nil {
 		logrus.Println(err)
 		return nil, err
@@ -68,7 +62,7 @@ func Load() (*Storage, error) {
 	defer file.Close()
 
 	// The serialized data to be deserialized
-	serializedData, err := os.ReadFile(config.StorageFileName)
+	serializedData, err := os.ReadFile(storageFile)
 	if err != nil {
 		log.Fatal(err)
 	}
