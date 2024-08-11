@@ -11,8 +11,6 @@ import (
 	"git.rickiekarp.net/rickie/fileguardian/modules/filestorage"
 )
 
-var Version = "development" // Version set during go build using ldflags
-
 func main() {
 
 	if *config.PrintHelp {
@@ -21,7 +19,7 @@ func main() {
 	}
 
 	if *config.PrintVersion {
-		fmt.Println(Version)
+		fmt.Println(config.Version)
 		os.Exit(0)
 	}
 
