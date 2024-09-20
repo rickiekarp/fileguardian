@@ -1,15 +1,19 @@
 package main
 
 import (
-	"errors"
+	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"git.rickiekarp.net/rickie/fileguardian/config"
 	"git.rickiekarp.net/rickie/fileguardian/modules/filestorage"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -26,80 +30,110 @@ func main() {
 
 	arguments := flag.Args()
 
-	var acc *filestorage.Storage
-	storageFile := config.GetStorageFile()
-	if _, err := os.Stat(storageFile); errors.Is(err, os.ErrNotExist) {
-		acc, _ = filestorage.Generate()
-		filestorage.Persist(*acc)
-	} else {
-		acc, _ = filestorage.Load(storageFile)
-	}
-
 	if len(arguments) > 0 {
 
-		var storageModified = false
-		var foundFile *filestorage.File = nil
+		fileType := "file"
 
 		for _, arg := range arguments {
 
-			foundFile = nil
-			if strings.HasSuffix(arg, "."+config.DataExtension) {
+			baseFile := filepath.Base(arg)
 
-				for _, storedFile := range acc.Files[config.StorageContext] {
-					if storedFile.Dst == arg {
-						foundFile = &storedFile
-						break
-					}
+			// if the file has a DataExcention, we assume it's already hashed and therefor the target
+			if strings.HasSuffix(baseFile, "."+config.DataExtension) {
+
+				// fetch entry
+				resp := request(baseFile, fileType, config.StorageContext)
+				if resp == nil {
+					os.Exit(1)
 				}
 
-				if foundFile != nil {
-					fmt.Println(foundFile.Src)
-					continue
-				}
+				fmt.Println(resp.Source)
+
 			} else {
 
-				// look for the file in the hashed data
-				for _, storedFile := range acc.Files[config.StorageContext] {
-					if storedFile.Dst == filepath.Base(arg) {
-						foundFile = &storedFile
-						break
+				fileInfo := filestorage.Evaluate(arg)
+				if fileInfo != nil {
+					if (*fileInfo).IsDir() {
+						fileType = "dir"
 					}
-				}
-
-				// if the file still can't be found, look into the Src
-				if foundFile == nil {
-					for _, storedFile := range acc.Files[config.StorageContext] {
-						if storedFile.Src == filepath.Base(arg) {
-							foundFile = &storedFile
-							break
-						}
-					}
-				}
-
-				if foundFile != nil {
-					fmt.Println(foundFile.Dst)
-					continue
 				} else {
-					loadedFiles, err := filestorage.LoadDataFromDisk(arg)
-					if err != nil {
-						fmt.Println("Could not load files from disk")
-						fmt.Println(err)
-						os.Exit(1)
-					}
+					fileType = ""
+				}
 
-					acc.Files[config.StorageContext] = append(acc.Files[config.StorageContext], loadedFiles[0])
-					storageModified = true
-					fmt.Println(loadedFiles[0].Dst)
-					continue
+				resp := request(baseFile, fileType, config.StorageContext)
+				if resp == nil {
+					os.Exit(1)
+				}
+
+				switch baseFile {
+				case resp.Source:
+					fmt.Println(resp.Target)
+				case resp.Target:
+					fmt.Println(resp.Source)
 				}
 			}
 		}
-
-		if storageModified {
-			filestorage.Persist(*acc)
-		}
-
-	} else {
-		filestorage.DisplayEntries(*acc)
 	}
+}
+
+func request(fileName string, fileType string, context string) *FileGuardianEventMessage {
+	url := config.ApiProtocol + "://" + config.ApiHost + "/fileguardian/v1/fetch"
+
+	// create post body using an instance of the Person struct
+	requestEvent := FileGuardianEventMessage{
+		Type:    fileType,
+		Context: context,
+	}
+
+	// from a fileguardian perspective our file is always the source
+	requestEvent.Source = fileName
+
+	// convert p to JSON data
+	jsonData, err := json.Marshal(requestEvent)
+	if err != nil {
+		logrus.Error(err)
+		return nil
+	}
+
+	// We can set the content type here
+	resp, err := http.Post(url, "application/json", bytes.NewReader(jsonData))
+	if err != nil {
+		logrus.Error(err)
+		return nil
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		logrus.Error("Could not fetch data")
+		return nil
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logrus.Error(err)
+		return nil
+	}
+
+	var res FileGuardianEventMessage
+	err = json.Unmarshal([]byte(body), &res)
+	if err != nil {
+		logrus.Error(err)
+		return nil
+	}
+
+	if res.Source == "" || res.Target == "" {
+		logrus.Error("source and target are empty for body: ", string(body))
+		return nil
+	}
+
+	return &res
+}
+
+type FileGuardianEventMessage struct {
+	Id         *int64 `json:"id,omitempty"`
+	Type       string `json:"type,omitempty"`
+	Source     string `json:"source,omitempty"`
+	Target     string `json:"target,omitempty"`
+	Context    string `json:"context,omitempty"`
+	Inserttime *int64 `json:"inserttime,omitempty"`
 }

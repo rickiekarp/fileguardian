@@ -3,6 +3,7 @@ package filestorage
 import (
 	"crypto/md5"
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"strconv"
@@ -68,4 +69,12 @@ func IsValidPath(path string) (bool, bool) {
 	}
 
 	return true, true
+}
+
+func Evaluate(path string) *fs.FileInfo {
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return nil
+	}
+	return &fileInfo
 }
