@@ -38,11 +38,11 @@ func main() {
 
 			baseFile := filepath.Base(arg)
 
-			// if the file has a DataExcention, we assume it's already hashed and therefor the target
+			// if the file has a DataExtension, we assume it's already hashed and therefor the target
 			if strings.HasSuffix(baseFile, "."+config.DataExtension) {
 
 				// fetch entry
-				resp := request(baseFile, fileType, config.StorageContext)
+				resp := sendRequest(baseFile, fileType, config.StorageContext)
 				if resp == nil {
 					os.Exit(1)
 				}
@@ -51,7 +51,7 @@ func main() {
 
 			} else {
 
-				fileInfo := filestorage.Evaluate(arg)
+				fileInfo := filestorage.PathExists(arg)
 				if fileInfo != nil {
 					if (*fileInfo).IsDir() {
 						fileType = "dir"
@@ -60,7 +60,7 @@ func main() {
 					fileType = ""
 				}
 
-				resp := request(baseFile, fileType, config.StorageContext)
+				resp := sendRequest(baseFile, fileType, config.StorageContext)
 				if resp == nil {
 					os.Exit(1)
 				}
@@ -76,7 +76,7 @@ func main() {
 	}
 }
 
-func request(fileName string, fileType string, context string) *FileGuardianEventMessage {
+func sendRequest(fileName string, fileType string, context string) *FileGuardianEventMessage {
 	url := config.ApiProtocol + "://" + config.ApiHost + "/fileguardian/v1/fetch"
 
 	// create post body using an instance of the Person struct
