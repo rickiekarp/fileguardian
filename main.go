@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -42,12 +43,17 @@ func main() {
 			if strings.HasSuffix(baseFile, "."+config.DataExtension) {
 
 				// fetch entry
-				resp := sendRequest(baseFile, fileType, config.StorageContext)
-				if resp == nil {
+				resp, err := sendRequest(baseFile, fileType, config.StorageContext)
+				if err != nil {
+					logrus.Error(err)
 					os.Exit(1)
 				}
 
-				fmt.Println(resp.Source)
+				if resp != nil {
+					fmt.Println(resp.Source)
+				} else {
+					os.Exit(0)
+				}
 
 			} else {
 
@@ -60,24 +66,33 @@ func main() {
 					fileType = ""
 				}
 
-				resp := sendRequest(baseFile, fileType, config.StorageContext)
-				if resp == nil {
+				resp, err := sendRequest(baseFile, fileType, config.StorageContext)
+				if err != nil {
+					logrus.Error(err)
 					os.Exit(1)
 				}
 
-				switch baseFile {
-				case resp.Source:
-					fmt.Println(resp.Target)
-				case resp.Target:
-					fmt.Println(resp.Source)
+				if resp != nil {
+					switch baseFile {
+					case resp.Source:
+						fmt.Println(resp.Target)
+					case resp.Target:
+						fmt.Println(resp.Source)
+					}
+				} else {
+					os.Exit(0)
 				}
 			}
 		}
 	}
 }
 
-func sendRequest(fileName string, fileType string, context string) *FileGuardianEventMessage {
+func sendRequest(fileName string, fileType string, context string) (*FileGuardianEventMessage, error) {
 	url := config.ApiProtocol + "://" + config.ApiHost + "/fileguardian/v1/fetch"
+
+	if *config.FlagCheck {
+		url += "?check=true"
+	}
 
 	// create post body using an instance of the Person struct
 	requestEvent := FileGuardianEventMessage{
@@ -91,42 +106,40 @@ func sendRequest(fileName string, fileType string, context string) *FileGuardian
 	// convert p to JSON data
 	jsonData, err := json.Marshal(requestEvent)
 	if err != nil {
-		logrus.Error(err)
-		return nil
+		return nil, errors.New("could not marshal requestEvent")
 	}
 
 	// We can set the content type here
 	resp, err := http.Post(url, "application/json", bytes.NewReader(jsonData))
 	if err != nil {
-		logrus.Error(err)
-		return nil
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		logrus.Error("Could not fetch data")
-		return nil
+		return nil, err
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		logrus.Error(err)
-		return nil
+		return nil, err
+	}
+
+	if len(body) == 0 {
+		return nil, nil
 	}
 
 	var res FileGuardianEventMessage
 	err = json.Unmarshal([]byte(body), &res)
 	if err != nil {
-		logrus.Error(err)
-		return nil
+		return nil, err
 	}
 
 	if res.Source == "" || res.Target == "" {
-		logrus.Error("source and target are empty for body: ", string(body))
-		return nil
+		return nil, errors.New("source and target are empty for body")
 	}
 
-	return &res
+	return &res, nil
 }
 
 type FileGuardianEventMessage struct {
