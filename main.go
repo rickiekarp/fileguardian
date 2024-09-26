@@ -14,6 +14,7 @@ import (
 
 	"git.rickiekarp.net/rickie/fileguardian/config"
 	"git.rickiekarp.net/rickie/fileguardian/modules/filestorage"
+	"git.rickiekarp.net/rickie/filesanitizer"
 	"github.com/sirupsen/logrus"
 )
 
@@ -31,6 +32,17 @@ func main() {
 
 	arguments := flag.Args()
 
+	// if the -s flag is set, attempt to sanitize the filenames of all files in a given directory
+	if *config.FlagSanitizer {
+		if len(arguments) > 0 {
+			filesanitizer.SanitizeFilesInFolder(arguments[0])
+		} else {
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
+
+	// fetch source/hashed file name from the storage
 	if len(arguments) > 0 {
 
 		fileType := "file"
