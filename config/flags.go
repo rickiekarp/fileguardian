@@ -8,8 +8,10 @@ var StorageContext string
 
 var PrintHelp = flag.Bool("h", false, "print help")
 var PrintVersion = flag.Bool("v", false, "prints version")
-var FlagCheck = flag.Bool("c", false, "only checks if the given file exists on the remote")
 
+var FlagEncrypt = flag.Bool("e", false, "encrypts a given file")
+var FlagDecrypt = flag.Bool("d", false, "decrypts a given file")
+var FlagCheck = flag.Bool("c", false, "only checks if the given file exists on the remote")
 var FlagSanitizer = flag.Bool("s", false, "sanitizes all file names in a given directory")
 
 func init() {

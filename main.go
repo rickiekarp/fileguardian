@@ -13,7 +13,8 @@ import (
 	"strings"
 
 	"git.rickiekarp.net/rickie/fileguardian/config"
-	"git.rickiekarp.net/rickie/fileguardian/modules/filestorage"
+	"git.rickiekarp.net/rickie/fileguardian/fileprocessor"
+	"git.rickiekarp.net/rickie/fileguardian/utils"
 	"git.rickiekarp.net/rickie/filesanitizer"
 	"github.com/sirupsen/logrus"
 )
@@ -42,12 +43,22 @@ func main() {
 		os.Exit(0)
 	}
 
+	// encrypts or decrypts a given file
+	if *config.FlagEncrypt || *config.FlagDecrypt {
+		os.Exit(0)
+	}
+
+	// process the given files
+	run(arguments)
+}
+
+func run(args []string) {
 	// fetch source/hashed file name from the storage
-	if len(arguments) > 0 {
+	if len(args) > 0 {
 
 		fileType := "file"
 
-		for _, arg := range arguments {
+		for _, arg := range args {
 
 			baseFile := filepath.Base(arg)
 
@@ -61,15 +72,15 @@ func main() {
 					os.Exit(1)
 				}
 
+				// print result
 				if resp != nil {
 					fmt.Println(resp.Source)
-				} else {
-					os.Exit(0)
 				}
 
 			} else {
 
-				fileInfo := filestorage.PathExists(arg)
+				// check if given file arg exists locally
+				fileInfo := utils.PathExists(arg)
 				if fileInfo != nil {
 					if (*fileInfo).IsDir() {
 						fileType = "dir"
@@ -78,12 +89,14 @@ func main() {
 					fileType = ""
 				}
 
+				// fetch entry
 				resp, err := sendRequest(baseFile, fileType, config.StorageContext)
 				if err != nil {
 					logrus.Error(err)
 					os.Exit(1)
 				}
 
+				// print result
 				if resp != nil {
 					switch baseFile {
 					case resp.Source:
@@ -91,15 +104,13 @@ func main() {
 					case resp.Target:
 						fmt.Println(resp.Source)
 					}
-				} else {
-					os.Exit(0)
 				}
 			}
 		}
 	}
 }
 
-func sendRequest(fileName string, fileType string, context string) (*FileGuardianEventMessage, error) {
+func sendRequest(fileName string, fileType string, context string) (*fileprocessor.FileGuardianEventMessage, error) {
 	url := config.ApiProtocol + "://" + config.ApiHost + "/fileguardian/v1/fetch"
 
 	if *config.FlagCheck {
@@ -107,7 +118,7 @@ func sendRequest(fileName string, fileType string, context string) (*FileGuardia
 	}
 
 	// create post body using an instance of the Person struct
-	requestEvent := FileGuardianEventMessage{
+	requestEvent := fileprocessor.FileGuardianEventMessage{
 		Type:    fileType,
 		Context: context,
 	}
@@ -141,7 +152,7 @@ func sendRequest(fileName string, fileType string, context string) (*FileGuardia
 		return nil, nil
 	}
 
-	var res FileGuardianEventMessage
+	var res fileprocessor.FileGuardianEventMessage
 	err = json.Unmarshal([]byte(body), &res)
 	if err != nil {
 		return nil, err
@@ -152,13 +163,4 @@ func sendRequest(fileName string, fileType string, context string) (*FileGuardia
 	}
 
 	return &res, nil
-}
-
-type FileGuardianEventMessage struct {
-	Id         *int64 `json:"id,omitempty"`
-	Type       string `json:"type,omitempty"`
-	Source     string `json:"source,omitempty"`
-	Target     string `json:"target,omitempty"`
-	Context    string `json:"context,omitempty"`
-	Inserttime *int64 `json:"inserttime,omitempty"`
 }
