@@ -1,22 +1,27 @@
 package fileprocessor
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"net/http"
-	"os"
 	"path/filepath"
 	"strings"
 
 	"git.rickiekarp.net/rickie/fileguardian/config"
 	"git.rickiekarp.net/rickie/fileguardian/utils"
-	"github.com/sirupsen/logrus"
 )
 
-func Run(args []string) {
+func Run(args []string) error {
+
+	// default mode: print
+	processMode := Print
+
+	// encrypts or decrypts a given file
+	if *config.FlagEncrypt {
+		processMode = Encrypt
+	} else if *config.FlagDecrypt {
+		processMode = Decrypt
+	}
+
 	// fetch source/hashed file name from the storage
 	if len(args) > 0 {
 
@@ -32,15 +37,24 @@ func Run(args []string) {
 				// fetch entry
 				resp, err := sendRequest(baseFile, fileType, config.StorageContext)
 				if err != nil {
-					logrus.Error(err)
-					os.Exit(1)
+					return err
 				}
 
-				// print result
-				if resp != nil {
-					fmt.Println(resp.Source)
-				}
+				switch processMode {
+				case Print:
+					// print result if it exists
+					if resp != nil {
+						fmt.Println(resp.Source)
+					}
+				case Decrypt:
+					if resp == nil {
+						return errors.New("file not found for decryption: " + baseFile)
+					}
+					utils.PrintDecryption(resp.Source, resp.Target)
 
+				case Encrypt:
+					return errors.New("can't encrypt an already encrypted file")
+				}
 			} else {
 
 				// check if given file arg exists locally
@@ -56,75 +70,37 @@ func Run(args []string) {
 				// fetch entry
 				resp, err := sendRequest(baseFile, fileType, config.StorageContext)
 				if err != nil {
-					logrus.Error(err)
-					os.Exit(1)
+					return err
 				}
 
-				// print result
-				if resp != nil {
-					switch baseFile {
-					case resp.Source:
-						fmt.Println(resp.Target)
-					case resp.Target:
-						fmt.Println(resp.Source)
+				switch processMode {
+				case Print:
+					// print result depending on the fetched base file
+					if resp != nil {
+						switch baseFile {
+						case resp.Source:
+							fmt.Println(resp.Target)
+						case resp.Target:
+							fmt.Println(resp.Source)
+						}
 					}
+				case Decrypt:
+					return errors.New("can't decrypt an already decrypted file")
+				case Encrypt:
+					if fileType != "file" {
+						return errors.New("wrong fileType detected for encryption: " + fileType)
+					}
+
+					// make sure pgp recipient is set
+					if len(*config.FlagRecipient) == 0 {
+						return errors.New("no recipient found for encryption, please set one using -r flag")
+					}
+
+					utils.PrintEncryption(resp.Source, resp.Target, *config.FlagRecipient)
 				}
 			}
 		}
 	}
-}
 
-func sendRequest(fileName string, fileType string, context string) (*fileGuardianEventMessage, error) {
-	url := config.ApiProtocol + "://" + config.ApiHost + "/fileguardian/v1/fetch"
-
-	if *config.FlagCheck {
-		url += "?check=true"
-	}
-
-	// create post body using an instance of the Person struct
-	requestEvent := fileGuardianEventMessage{
-		Type:    fileType,
-		Context: context,
-	}
-
-	// from a fileguardian perspective our file is always the source
-	requestEvent.Source = fileName
-
-	// convert p to JSON data
-	jsonData, err := json.Marshal(requestEvent)
-	if err != nil {
-		return nil, errors.New("could not marshal requestEvent")
-	}
-
-	// We can set the content type here
-	resp, err := http.Post(url, "application/json", bytes.NewReader(jsonData))
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return nil, err
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(body) == 0 {
-		return nil, nil
-	}
-
-	var res fileGuardianEventMessage
-	err = json.Unmarshal([]byte(body), &res)
-	if err != nil {
-		return nil, err
-	}
-
-	if res.Source == "" || res.Target == "" {
-		return nil, errors.New("source and target are empty for body")
-	}
-
-	return &res, nil
+	return nil
 }

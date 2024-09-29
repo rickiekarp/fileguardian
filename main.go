@@ -8,6 +8,7 @@ import (
 	"git.rickiekarp.net/rickie/fileguardian/config"
 	"git.rickiekarp.net/rickie/fileguardian/fileprocessor"
 	"git.rickiekarp.net/rickie/filesanitizer"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -34,11 +35,19 @@ func main() {
 		os.Exit(0)
 	}
 
-	// encrypts or decrypts a given file
-	if *config.FlagEncrypt || *config.FlagDecrypt {
-		os.Exit(0)
-	}
+	validateInput()
 
-	// process the given files
-	fileprocessor.Run(arguments)
+	err := fileprocessor.Run(arguments)
+	if err != nil {
+		logrus.Error(err)
+		os.Exit(1)
+	}
+	os.Exit(0)
+}
+
+func validateInput() {
+	if *config.FlagEncrypt && *config.FlagDecrypt {
+		logrus.Error("can't use -e and -d flag at the same time")
+		os.Exit(1)
+	}
 }

@@ -8,3 +8,11 @@ type fileGuardianEventMessage struct {
 	Context    string `json:"context,omitempty"`
 	Inserttime *int64 `json:"inserttime,omitempty"`
 }
+
+type ProcessType int
+
+const (
+	Print ProcessType = iota
+	Encrypt
+	Decrypt
+)
