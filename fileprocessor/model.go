@@ -1,6 +1,6 @@
 package fileprocessor
 
-type FileGuardianEventMessage struct {
+type fileGuardianEventMessage struct {
 	Id         *int64 `json:"id,omitempty"`
 	Type       string `json:"type,omitempty"`
 	Source     string `json:"source,omitempty"`
