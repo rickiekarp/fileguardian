@@ -1,5 +1,7 @@
 git.rickiekarp.net/rickie/filesanitizer v0.0.5 h1:GYdRh2sfNjSFefi4WskqUIqKVSxgglPUSr6rYmesiVU=
 git.rickiekarp.net/rickie/filesanitizer v0.0.5/go.mod h1:3q48KD7xquDzkZtQ0xzWm7DSarsFG1kQZHGuBK93yKI=
+git.rickiekarp.net/rickie/filesanitizer v0.0.6 h1:VWHbm8Jg8xnr6IxOse0CVJ9dPxYNOtkNL3tw3f8BNKs=
+git.rickiekarp.net/rickie/filesanitizer v0.0.6/go.mod h1:ggTvGnrfxQ0UPtBPoSFPTOXmu172j8am9EbDcB+xH3c=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
