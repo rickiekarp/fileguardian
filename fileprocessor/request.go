@@ -8,9 +8,10 @@ import (
 	"net/http"
 
 	"git.rickiekarp.net/rickie/fileguardian/config"
+	"git.rickiekarp.net/rickie/nexusform"
 )
 
-func sendRequest(fileName string, fileType string, context string) (*fileGuardianEventMessage, error) {
+func sendRequest(fileName string, fileType string, context string) (*nexusform.FileGuardianEntry, error) {
 	url := config.ApiProtocol + "://" + config.ApiHost + "/fileguardian/v1/fetch"
 
 	if *config.FlagCheck {
@@ -18,7 +19,7 @@ func sendRequest(fileName string, fileType string, context string) (*fileGuardia
 	}
 
 	// create post body using an instance of the Person struct
-	requestEvent := fileGuardianEventMessage{
+	requestEvent := nexusform.FileGuardianEntry{
 		Type:    fileType,
 		Context: context,
 	}
@@ -52,7 +53,7 @@ func sendRequest(fileName string, fileType string, context string) (*fileGuardia
 		return nil, nil
 	}
 
-	var res fileGuardianEventMessage
+	var res nexusform.FileGuardianEntry
 	err = json.Unmarshal([]byte(body), &res)
 	if err != nil {
 		return nil, err

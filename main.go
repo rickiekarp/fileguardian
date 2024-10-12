@@ -15,8 +15,7 @@ import (
 func main() {
 
 	if *config.PrintHelp {
-		goutilkit.PrintUsage()
-		os.Exit(0)
+		goutilkit.PrintUsageAndExit()
 	}
 
 	if *config.PrintVersion {

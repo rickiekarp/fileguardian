@@ -4,7 +4,8 @@ go 1.22.5
 
 require (
 	git.rickiekarp.net/rickie/filesanitizer v0.0.6
-	git.rickiekarp.net/rickie/goutilkit v0.0.2
+	git.rickiekarp.net/rickie/goutilkit v0.0.3
+	git.rickiekarp.net/rickie/nexusform v0.0.6
 	github.com/sirupsen/logrus v1.9.3
 )
 
