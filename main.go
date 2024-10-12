@@ -8,13 +8,14 @@ import (
 	"git.rickiekarp.net/rickie/fileguardian/config"
 	"git.rickiekarp.net/rickie/fileguardian/fileprocessor"
 	"git.rickiekarp.net/rickie/filesanitizer"
+	"git.rickiekarp.net/rickie/goutilkit"
 	"github.com/sirupsen/logrus"
 )
 
 func main() {
 
 	if *config.PrintHelp {
-		config.PrintUsage()
+		goutilkit.PrintUsage()
 		os.Exit(0)
 	}
 

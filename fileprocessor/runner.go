@@ -8,6 +8,7 @@ import (
 
 	"git.rickiekarp.net/rickie/fileguardian/config"
 	"git.rickiekarp.net/rickie/fileguardian/utils"
+	"git.rickiekarp.net/rickie/goutilkit"
 )
 
 func Run(args []string) error {
@@ -57,9 +58,9 @@ func Run(args []string) error {
 				}
 			} else {
 
-				// check if given file arg exists locally
-				fileInfo := utils.PathExists(arg)
-				if fileInfo != nil {
+				// check if given file path arg exists locally
+				pathExists, fileInfo := goutilkit.PathExists(arg)
+				if pathExists {
 					if (*fileInfo).IsDir() {
 						fileType = "dir"
 					}
