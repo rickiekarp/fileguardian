@@ -12,7 +12,7 @@ import (
 )
 
 func sendRequest(fileName string, fileType string, context string) (*nexusform.FileGuardianEntry, error) {
-	url := config.ApiProtocol + "://" + config.ApiHost + "/fileguardian/v1/fetch"
+	url := config.ApiProtocol + "://" + config.ApiHost + "/storage/v1/fileguardian/fetch"
 
 	if *config.FlagCheck {
 		url += "?check=true"
