@@ -1,9 +1,7 @@
-git.rickiekarp.net/rickie/filesanitizer v0.0.6 h1:VWHbm8Jg8xnr6IxOse0CVJ9dPxYNOtkNL3tw3f8BNKs=
-git.rickiekarp.net/rickie/filesanitizer v0.0.6/go.mod h1:ggTvGnrfxQ0UPtBPoSFPTOXmu172j8am9EbDcB+xH3c=
-git.rickiekarp.net/rickie/goutilkit v0.0.3 h1:ZuTUM5R9nSgz+K5Kh6cnAg06ALOLti1p3/MTf/s+VNw=
-git.rickiekarp.net/rickie/goutilkit v0.0.3/go.mod h1:KuJRt7bZ88ENKfqMGYxJjQxW5hYZQv+Rx7DrRwAUyAU=
-git.rickiekarp.net/rickie/nexusform v0.0.6 h1:IoaRmBNSh8pMcXOW41qPXYS2Pcl2xPKhfRe9T39Om4E=
-git.rickiekarp.net/rickie/nexusform v0.0.6/go.mod h1:eThnM1IguU06JlH4uFfpdNT/Gwj0531rlydGCwQQvX4=
+git.rickiekarp.net/rickie/goutilkit v1.24306.76582 h1:TSEPL/EuQ9rHLFz6JX9vCVZ7PQgIU69BR3u+NhckM5s=
+git.rickiekarp.net/rickie/goutilkit v1.24306.76582/go.mod h1:KuJRt7bZ88ENKfqMGYxJjQxW5hYZQv+Rx7DrRwAUyAU=
+git.rickiekarp.net/rickie/nexusform v1.24306.76388 h1:Ti9ywI8vBuUEcMMu8M8py+6zz+9kj/uLSQNU/VHuHhw=
+git.rickiekarp.net/rickie/nexusform v1.24306.76388/go.mod h1:eThnM1IguU06JlH4uFfpdNT/Gwj0531rlydGCwQQvX4=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
