@@ -19,7 +19,7 @@ var Conf ConfigFile
 // ReadConfigFile reads the given config file and tries to unmarshal it into the given configStruct
 func ReadConfigFile() error {
 
-	yamlFile, err := os.ReadFile("config.yaml")
+	yamlFile, err := os.ReadFile(ConfigBaseDir + "config.yaml")
 	if err != nil {
 		logrus.Error("yamlFile.Get err: ", err)
 		return err

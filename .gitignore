@@ -1,3 +1,5 @@
 *.fgd
 
 build
+deployment/config.yaml
+deployment/passphrase

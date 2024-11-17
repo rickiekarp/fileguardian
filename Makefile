@@ -13,7 +13,8 @@ buildAMD64:
 	go build \
 		-ldflags="-X git.rickiekarp.net/rickie/fileguardian/config.Version=$(shell git rev-parse HEAD) \
 		-X git.rickiekarp.net/rickie/fileguardian/config.ApiProtocol=https \
-		-X git.rickiekarp.net/rickie/fileguardian/config.ApiHost=api.rickiekarp.net" \
+		-X git.rickiekarp.net/rickie/fileguardian/config.ApiHost=api.rickiekarp.net \
+		-X git.rickiekarp.net/rickie/fileguardian/config.ConfigBaseDir=" \
 		-o $(BUILD_PATH)/fileguardian \
 		main.go
 
@@ -22,7 +23,8 @@ buildARM64v7:
 	go build \
 		-ldflags="-X git.rickiekarp.net/rickie/fileguardian/config.Version=$(shell git rev-parse HEAD) \
 		-X git.rickiekarp.net/rickie/fileguardian/config.ApiProtocol=https \
-		-X git.rickiekarp.net/rickie/fileguardian/config.ApiHost=api.rickiekarp.net" \
+		-X git.rickiekarp.net/rickie/fileguardian/config.ApiHost=api.rickiekarp.net \
+		-X git.rickiekarp.net/rickie/fileguardian/config.ConfigBaseDir=" \
 		-o $(BUILD_PATH)/fileguardian \
 		main.go
 
