@@ -27,4 +27,4 @@ buildARM64v7:
 		main.go
 
 deploy:
-	rsync -rlvpt --delete build/fileguardian pi:~/tools/
+	rsync -rlvpt --delete build/fileguardian pi:~/tools/fileguardian/

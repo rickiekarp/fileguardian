@@ -51,8 +51,18 @@ func Run(args []string) error {
 					if resp == nil {
 						return errors.New("file not found for decryption: " + baseFile)
 					}
-					utils.PrintDecryption(resp.Source, resp.Target)
 
+					// load config file
+					err := config.ReadConfigFile()
+					if err != nil {
+						return errors.New("could not load config")
+					}
+
+					passphrase := utils.ReadStringFromFile(config.Conf.Application.PassphraseFile)
+					if len(passphrase) == 0 {
+						return errors.New("invalid passphrase given")
+					}
+					return utils.Decrypt(resp.Source, resp.Target, passphrase)
 				case Encrypt:
 					return errors.New("can't encrypt an already encrypted file")
 				}
@@ -92,12 +102,28 @@ func Run(args []string) error {
 						return errors.New("wrong fileType detected for encryption: " + fileType)
 					}
 
+					recipient := *config.FlagRecipient
+
 					// make sure pgp recipient is set
 					if len(*config.FlagRecipient) == 0 {
-						return errors.New("no recipient found for encryption, please set one using -r flag")
+						// load config file
+						err := config.ReadConfigFile()
+						if err != nil {
+							return errors.New("could not load config")
+						}
+
+						if len(config.Conf.Application.Recipient) == 0 {
+							return errors.New("invalid recipient configured")
+						}
+
+						recipient = config.Conf.Application.Recipient
 					}
 
-					utils.PrintEncryption(resp.Source, resp.Target, *config.FlagRecipient)
+					if len(recipient) == 0 {
+						return errors.New("invalid recipient found")
+					}
+
+					return utils.Encrypt(resp.Source, resp.Target, recipient)
 				}
 			}
 		}
