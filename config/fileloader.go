@@ -9,8 +9,9 @@ import (
 
 type ConfigFile struct {
 	Application struct {
-		PassphraseFile string `yaml:"passphraseFile"`
-		Recipient      string `yaml:"recipient"`
+		VaultIdentifier string `yaml:"vaultIdentifier"`
+		Token           string `yaml:"token"`
+		Recipient       string `yaml:"recipient"`
 	}
 }
 

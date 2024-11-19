@@ -1,14 +1,20 @@
 package fileprocessor
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"net/http"
 	"path/filepath"
 	"strings"
 
 	"git.rickiekarp.net/rickie/fileguardian/config"
 	"git.rickiekarp.net/rickie/fileguardian/utils"
 	"git.rickiekarp.net/rickie/goutilkit"
+	"git.rickiekarp.net/rickie/nexuscore"
+	"git.rickiekarp.net/rickie/nexusform"
+	"github.com/sirupsen/logrus"
 )
 
 func Run(args []string) error {
@@ -52,17 +58,27 @@ func Run(args []string) error {
 						return errors.New("file not found for decryption: " + baseFile)
 					}
 
+					pathExists, _ := goutilkit.PathExists(baseFile + "." + config.DataExtension)
+					if !pathExists {
+						return errors.New("file not found on disk: " + baseFile)
+					}
+
 					// load config file
 					err := config.ReadConfigFile()
 					if err != nil {
 						return errors.New("could not load config")
 					}
 
-					passphrase := utils.ReadStringFromFile(config.Conf.Application.PassphraseFile)
-					if len(passphrase) == 0 {
-						return errors.New("invalid passphrase given")
+					vaultEntry, err := Fetch(config.Conf.Application.VaultIdentifier, config.Conf.Application.Token)
+					if err != nil {
+						return errors.New("could not fetch data from vault")
 					}
-					return utils.Decrypt(resp.Source, resp.Target, passphrase)
+					vaultContent := string(vaultEntry.Content)
+
+					if len(vaultContent) == 0 {
+						return errors.New("invalid content found")
+					}
+					return utils.Decrypt(resp.Source, resp.Target, vaultContent)
 				case Encrypt:
 					return errors.New("can't encrypt an already encrypted file")
 				}
@@ -130,4 +146,39 @@ func Run(args []string) error {
 	}
 
 	return nil
+}
+
+func Fetch(identifier string, token string) (*nexusform.VaultEntry, error) {
+	url := config.GetApiUrl() + nexuscore.ApiVaultFetchKey
+
+	client := &http.Client{}
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Set("X-Vault-Identifier", identifier)
+	req.Header.Set("X-Vault-Token", token)
+
+	// We can set the content type here
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	if len(body) == 0 {
+		return nil, errors.New("no file found")
+	}
+
+	res := nexusform.VaultEntry{}
+	err = json.Unmarshal([]byte(body), &res)
+	if err != nil {
+		logrus.Error("Could not unmarshal weather data! ", err)
+		return nil, err
+	}
+
+	return &res, nil
 }

@@ -1,3 +1,4 @@
 application:
-  passphraseFile: ./deployment/passphrase
+  vaultIdentifier: SOME_UUID
+  token: SOME_TOKEN
   recipient: foo@bar
