@@ -58,7 +58,7 @@ func Run(args []string) error {
 						return errors.New("file not found for decryption: " + baseFile)
 					}
 
-					pathExists, _ := goutilkit.PathExists(baseFile + "." + config.DataExtension)
+					pathExists, _ := goutilkit.PathExists(arg)
 					if !pathExists {
 						return errors.New("file not found on disk: " + baseFile)
 					}
@@ -78,7 +78,7 @@ func Run(args []string) error {
 					if len(vaultContent) == 0 {
 						return errors.New("invalid content found")
 					}
-					return utils.Decrypt(resp.Source, resp.Target, vaultContent)
+					return utils.Decrypt(resp.Source, arg, vaultContent)
 				case Encrypt:
 					return errors.New("can't encrypt an already encrypted file")
 				}
