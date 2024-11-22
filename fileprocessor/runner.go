@@ -103,14 +103,12 @@ func Run(args []string) error {
 				switch processMode {
 				case Print:
 					// print result depending on the fetched base file
-					if resp != nil {
-						switch baseFile {
-						case resp.Source:
-							fmt.Println(resp.Target)
-						case resp.Target:
-							fmt.Println(resp.Source)
-						}
+					if strings.EqualFold(baseFile, resp.Source) {
+						fmt.Println(resp.Target)
+					} else if strings.EqualFold(baseFile, resp.Target) {
+						fmt.Println(resp.Source)
 					}
+
 				case Decrypt:
 					return errors.New("can't decrypt an already decrypted file")
 				case Encrypt:
