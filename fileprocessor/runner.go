@@ -137,7 +137,7 @@ func Run(args []string) error {
 						return errors.New("invalid recipient found")
 					}
 
-					return utils.Encrypt(resp.Source, resp.Target, recipient)
+					return utils.Encrypt(arg, resp.Target, recipient)
 				}
 			}
 		}

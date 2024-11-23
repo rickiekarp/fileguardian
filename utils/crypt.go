@@ -11,7 +11,12 @@ import (
 /// Encryption helper functions
 
 func Encrypt(src string, dst string, recipient string) error {
-	command := "gpg --output " + dst + " --encrypt --recipient " + recipient + " " + src
+	outDir := *config.FlagOutput
+	if len(outDir) > 0 && !strings.HasSuffix(*config.FlagOutput, "/") {
+		outDir = outDir + "/"
+	}
+
+	command := "gpg --output " + outDir + dst + " --encrypt --recipient " + recipient + " " + src
 	exitCode, err := goutilkit.ExecuteCmdSilent(command)
 	if exitCode != 0 || err != nil {
 		return fmt.Errorf("could not encrypt file (exit code: %d)", exitCode)
