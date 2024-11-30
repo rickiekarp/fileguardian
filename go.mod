@@ -1,6 +1,6 @@
 module git.rickiekarp.net/rickie/fileguardian
 
-go 1.22.5
+go 1.23.3
 
 require (
 	git.rickiekarp.net/rickie/goutilkit v1.24328.46372
