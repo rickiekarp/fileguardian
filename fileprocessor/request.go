@@ -11,7 +11,7 @@ import (
 	"git.rickiekarp.net/rickie/nexusform"
 )
 
-func sendRequest(fileName string, fileType string, context string) (*nexusform.FileGuardianEntry, error) {
+func sendRequest(fileName string, fileType FileType, context string) (*nexusform.FileGuardianEntry, error) {
 	url := config.ApiProtocol + "://" + config.ApiHost + "/storage/v1/fileguardian/fetch"
 
 	if *config.FlagCheck {
@@ -20,7 +20,7 @@ func sendRequest(fileName string, fileType string, context string) (*nexusform.F
 
 	// create post body using an instance of the Person struct
 	requestEvent := nexusform.FileGuardianEntry{
-		Type:    fileType,
+		Type:    string(fileType),
 		Context: context,
 	}
 
