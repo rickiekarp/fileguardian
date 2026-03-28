@@ -7,14 +7,14 @@ import (
 
 	"git.rickiekarp.net/rickie/fileguardian/config"
 	"git.rickiekarp.net/rickie/fileguardian/fileprocessor"
-	"git.rickiekarp.net/rickie/goutilkit"
+	"git.rickiekarp.net/rickie/gomain"
 	"github.com/sirupsen/logrus"
 )
 
 func main() {
 
 	if *config.PrintHelp {
-		goutilkit.PrintUsageAndExit()
+		gomain.PrintUsageAndExit()
 	}
 
 	if *config.PrintVersion {

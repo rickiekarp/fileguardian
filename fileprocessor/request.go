@@ -8,10 +8,10 @@ import (
 	"net/http"
 
 	"git.rickiekarp.net/rickie/fileguardian/config"
-	"git.rickiekarp.net/rickie/nexusform"
+	"git.rickiekarp.net/rickie/yubase"
 )
 
-func sendRequest(fileName string, fileType FileType, context string) (*nexusform.FileGuardianEntry, error) {
+func sendRequest(fileName string, fileType FileType, context string) (*yubase.FileGuardianEntry, error) {
 	url := config.ApiProtocol + "://" + config.ApiHost + "/storage/v1/fileguardian/fetch"
 
 	if *config.FlagCheck {
@@ -19,7 +19,7 @@ func sendRequest(fileName string, fileType FileType, context string) (*nexusform
 	}
 
 	// create post body using an instance of the Person struct
-	requestEvent := nexusform.FileGuardianEntry{
+	requestEvent := yubase.FileGuardianEntry{
 		Type:    string(fileType),
 		Context: context,
 	}
@@ -53,7 +53,7 @@ func sendRequest(fileName string, fileType FileType, context string) (*nexusform
 		return nil, nil
 	}
 
-	var res nexusform.FileGuardianEntry
+	var res yubase.FileGuardianEntry
 	err = json.Unmarshal([]byte(body), &res)
 	if err != nil {
 		return nil, err

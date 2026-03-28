@@ -10,9 +10,8 @@ import (
 
 	"git.rickiekarp.net/rickie/fileguardian/config"
 	"git.rickiekarp.net/rickie/fileguardian/utils"
-	"git.rickiekarp.net/rickie/goutilkit"
-	"git.rickiekarp.net/rickie/nexuscore"
-	"git.rickiekarp.net/rickie/nexusform"
+	"git.rickiekarp.net/rickie/gomain"
+	"git.rickiekarp.net/rickie/yubase"
 	"github.com/sirupsen/logrus"
 )
 
@@ -84,7 +83,7 @@ func decryptFile(arg string, baseFile string, fileType FileType) error {
 		return errors.New("file not found for decryption: " + baseFile)
 	}
 
-	pathExists, _ := goutilkit.PathExists(arg)
+	pathExists, _ := gomain.PathExists(arg)
 	if !pathExists {
 		return errors.New("file not found on disk: " + baseFile)
 	}
@@ -131,8 +130,8 @@ func decryptFolderContent(folderPath string) error {
 	return nil
 }
 
-func fetchPassphrase(identifier string, token string) (*nexusform.VaultEntry, error) {
-	url := config.GetApiUrl() + nexuscore.ApiVaultFetchKey
+func fetchPassphrase(identifier string, token string) (*yubase.VaultEntry, error) {
+	url := config.GetApiUrl() + yubase.ApiVaultFetchKey
 
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", url, nil)
@@ -156,7 +155,7 @@ func fetchPassphrase(identifier string, token string) (*nexusform.VaultEntry, er
 		return nil, errors.New("no file found")
 	}
 
-	res := nexusform.VaultEntry{}
+	res := yubase.VaultEntry{}
 	err = json.Unmarshal([]byte(body), &res)
 	if err != nil {
 		logrus.Error("Could not unmarshal weather data! ", err)

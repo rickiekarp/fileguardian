@@ -2,7 +2,7 @@ package fileprocessor
 
 import (
 	"git.rickiekarp.net/rickie/fileguardian/config"
-	"git.rickiekarp.net/rickie/goutilkit"
+	"git.rickiekarp.net/rickie/gomain"
 )
 
 //
@@ -48,7 +48,7 @@ func getFileMode(filePath string) FileType {
 	fileType := File
 
 	// check if given file path exists locally
-	pathExists, fileInfo := goutilkit.PathExists(filePath)
+	pathExists, fileInfo := gomain.PathExists(filePath)
 	if pathExists {
 		if (*fileInfo).IsDir() {
 			fileType = Dir

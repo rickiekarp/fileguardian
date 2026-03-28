@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"git.rickiekarp.net/rickie/fileguardian/config"
-	"git.rickiekarp.net/rickie/goutilkit"
+	"git.rickiekarp.net/rickie/gomain"
 )
 
 /// Encryption helper functions
@@ -16,11 +16,22 @@ func Encrypt(src string, dst string, recipient string) error {
 		outDir = outDir + "/"
 	}
 
-	command := "gpg --output " + outDir + dst + " --encrypt --recipient " + recipient + " " + src
-	exitCode, err := goutilkit.ExecuteCmdSilent(command)
-	if exitCode != 0 || err != nil {
-		return fmt.Errorf("could not encrypt file (exit code: %d)", exitCode)
+	opts := gomain.DefaultOptions()
+	opts.OutputType = gomain.CommandOutputSilent
+
+	cmdResp := gomain.ExecuteWithOptions(
+		opts,
+		"gpg",
+		"--output", outDir+dst,
+		"--encrypt",
+		"--recipient", recipient,
+		src,
+	)
+
+	if cmdResp.ExitCode != 0 || cmdResp.Err != nil {
+		return fmt.Errorf("could not encrypt file (exit code: %d)", cmdResp.ExitCode)
 	}
+
 	return nil
 }
 
@@ -32,10 +43,19 @@ func Decrypt(sourceFile string, target string, passphrase string) error {
 		outDir = outDir + "/"
 	}
 
-	command := "gpg --pinentry-mode loopback --passphrase " + passphrase + " --output " + outDir + sourceFile + " --decrypt " + target
-	exitCode, err := goutilkit.ExecuteCmdSilent(command)
-	if exitCode != 0 || err != nil {
-		return fmt.Errorf("could not decrypt file (exit code: %d)", exitCode)
+	opts := gomain.DefaultOptions()
+	opts.OutputType = gomain.CommandOutputSilent
+
+	cmdResp := gomain.ExecuteWithOptions(
+		opts,
+		"gpg",
+		"--pinentry-mode", "loopback",
+		"--passphrase", passphrase,
+		"--output", outDir+sourceFile,
+		"--decrypt", target,
+	)
+	if cmdResp.ExitCode != 0 || cmdResp.Err != nil {
+		return fmt.Errorf("could not decrypt file (exit code: %d)", cmdResp.ExitCode)
 	}
 	return nil
 }
