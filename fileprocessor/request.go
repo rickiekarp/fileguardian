@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"time"
 
 	"git.rickiekarp.net/rickie/fileguardian/config"
 	"git.rickiekarp.net/rickie/yubase"
@@ -33,8 +34,14 @@ func sendRequest(fileName string, fileType FileType, context string) (*yubase.Fi
 		return nil, errors.New("could not marshal requestEvent")
 	}
 
-	// We can set the content type here
-	resp, err := http.Post(url, "application/json", bytes.NewReader(jsonData))
+	client := &http.Client{
+		Timeout: 60 * time.Second,
+		Transport: &http.Transport{
+			TLSHandshakeTimeout: 30 * time.Second,
+		},
+	}
+
+	resp, err := client.Post(url, "application/json", bytes.NewReader(jsonData))
 	if err != nil {
 		return nil, err
 	}
