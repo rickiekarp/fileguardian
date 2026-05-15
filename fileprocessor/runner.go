@@ -20,13 +20,17 @@ func Run(args []string) error {
 
 	for _, arg := range args {
 
-		quantumLockMode := getQuantumLockMode(arg)
-		baseFile := filepath.Base(arg)
-		hasDataExtension := strings.HasSuffix(baseFile, "."+yubase.FileGuardianDataExtension)
+		quantumLockMode, pathExists := getQuantumLockMode(arg)
+		input := arg
+		hasDataExtension := false
+		if pathExists {
+			input = filepath.Base(arg)
+			hasDataExtension = strings.HasSuffix(input, "."+yubase.FileGuardianDataExtension)
+		}
 
 		switch processMode {
 		case Print:
-			resp, err := sendRequest(baseFile, quantumLockMode, config.StorageContext)
+			resp, err := sendRequest(input, quantumLockMode, config.StorageContext)
 			if err != nil {
 				return err
 			}
@@ -37,9 +41,9 @@ func Run(args []string) error {
 				}
 			} else {
 				// print result depending on the fetched base file
-				if strings.EqualFold(baseFile, resp.Source) {
+				if strings.EqualFold(input, resp.Source) {
 					fmt.Println(resp.Target)
-				} else if strings.EqualFold(baseFile, resp.Target) {
+				} else if strings.EqualFold(input, resp.Target) {
 					fmt.Println(resp.Source)
 				}
 			}
@@ -51,7 +55,7 @@ func Run(args []string) error {
 					return errors.New("wrong file extension found during decryption")
 				}
 
-				err := decryptFile(arg, baseFile, quantumLockMode)
+				err := decryptFile(arg, input, quantumLockMode)
 				if err != nil {
 					return err
 				}
@@ -73,7 +77,7 @@ func Run(args []string) error {
 					return errors.New("can not encrypt an already encrypted file")
 				}
 
-				err := encryptFile(arg, baseFile, quantumLockMode)
+				err := encryptFile(arg, input, quantumLockMode)
 				if err != nil {
 					return err
 				}

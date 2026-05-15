@@ -33,7 +33,7 @@ func getProcessMode() ProcessType {
 	return processMode
 }
 
-func getQuantumLockMode(filePath string) yubase.QuantumLockType {
+func getQuantumLockMode(filePath string) (yubase.QuantumLockType, bool) {
 	lockType := yubase.None
 
 	// check if given file path exists locally
@@ -48,5 +48,5 @@ func getQuantumLockMode(filePath string) yubase.QuantumLockType {
 		lockType = yubase.String
 	}
 
-	return lockType
+	return lockType, pathExists
 }
