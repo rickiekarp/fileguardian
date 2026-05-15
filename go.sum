@@ -2,6 +2,10 @@ git.rickiekarp.net/rickie/gomain v1.26086.81942 h1:WlWXmvMz7zK29ZqeoW40U8WZqQPOv
 git.rickiekarp.net/rickie/gomain v1.26086.81942/go.mod h1:yEKG0sK3v5UdQcuFwysYQhBsi8O4GN2iCUkp7aKiVSI=
 git.rickiekarp.net/rickie/yubase v1.26086.81922 h1:Zmh2FaHssn6VNX8Wa6+tRrt0doKltk/Cyob82x6jUa8=
 git.rickiekarp.net/rickie/yubase v1.26086.81922/go.mod h1:VtqQ1Cok/+tDHyS+g/ryQBaN9A3mtiD+Zvq97L2MuZI=
+git.rickiekarp.net/rickie/yubase v1.26135.78496 h1:nhLGm8br+0ADm3iokh9OZPGSxQnSVNEZLwMb+vpKkCQ=
+git.rickiekarp.net/rickie/yubase v1.26135.78496/go.mod h1:VtqQ1Cok/+tDHyS+g/ryQBaN9A3mtiD+Zvq97L2MuZI=
+git.rickiekarp.net/rickie/yubase v1.26135.79789 h1:Kc67pT65UJWd/Dde8LQYNU3b265RZ1ksnd4HCvboJlE=
+git.rickiekarp.net/rickie/yubase v1.26135.79789/go.mod h1:VtqQ1Cok/+tDHyS+g/ryQBaN9A3mtiD+Zvq97L2MuZI=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

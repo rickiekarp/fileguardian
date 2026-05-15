@@ -9,6 +9,6 @@ require (
 
 require (
 	git.rickiekarp.net/rickie/gomain v1.26086.81942
-	git.rickiekarp.net/rickie/yubase v1.26086.81922
+	git.rickiekarp.net/rickie/yubase v1.26135.79789
 	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
 )

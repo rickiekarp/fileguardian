@@ -12,7 +12,7 @@ import (
 	"git.rickiekarp.net/rickie/yubase"
 )
 
-func sendRequest(fileName string, fileType FileType, context string) (*yubase.FileGuardianEntry, error) {
+func sendRequest(fileName string, quantumLockType yubase.QuantumLockType, context string) (*yubase.FileGuardianEntry, error) {
 	url := config.ApiProtocol + "://" + config.ApiHost + "/storage/v1/fileguardian/fetch"
 
 	if *config.FlagCheck {
@@ -21,7 +21,7 @@ func sendRequest(fileName string, fileType FileType, context string) (*yubase.Fi
 
 	// create post body using an instance of the Person struct
 	requestEvent := yubase.FileGuardianEntry{
-		Type:    string(fileType),
+		Type:    string(quantumLockType),
 		Context: context,
 	}
 

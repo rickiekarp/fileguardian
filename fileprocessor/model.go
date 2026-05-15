@@ -3,6 +3,7 @@ package fileprocessor
 import (
 	"git.rickiekarp.net/rickie/fileguardian/config"
 	"git.rickiekarp.net/rickie/gomain"
+	"git.rickiekarp.net/rickie/yubase"
 )
 
 //
@@ -32,30 +33,20 @@ func getProcessMode() ProcessType {
 	return processMode
 }
 
-//
-// FileType
-//
-
-type FileType string
-
-const (
-	File FileType = "file"
-	Dir  FileType = "dir"
-	None FileType = ""
-)
-
-func getFileMode(filePath string) FileType {
-	fileType := File
+func getQuantumLockMode(filePath string) yubase.QuantumLockType {
+	lockType := yubase.None
 
 	// check if given file path exists locally
 	pathExists, fileInfo := gomain.PathExists(filePath)
 	if pathExists {
 		if (*fileInfo).IsDir() {
-			fileType = Dir
+			lockType = yubase.Dir
+		} else {
+			lockType = yubase.File
 		}
 	} else {
-		fileType = None
+		lockType = yubase.String
 	}
 
-	return fileType
+	return lockType
 }

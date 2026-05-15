@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"git.rickiekarp.net/rickie/fileguardian/config"
+	"git.rickiekarp.net/rickie/yubase"
 )
 
 func Run(args []string) error {
@@ -19,13 +20,13 @@ func Run(args []string) error {
 
 	for _, arg := range args {
 
-		fileMode := getFileMode(arg)
+		quantumLockMode := getQuantumLockMode(arg)
 		baseFile := filepath.Base(arg)
-		hasDataExtension := strings.HasSuffix(baseFile, "."+config.DataExtension)
+		hasDataExtension := strings.HasSuffix(baseFile, "."+yubase.FileGuardianDataExtension)
 
 		switch processMode {
 		case Print:
-			resp, err := sendRequest(baseFile, fileMode, config.StorageContext)
+			resp, err := sendRequest(baseFile, quantumLockMode, config.StorageContext)
 			if err != nil {
 				return err
 			}
@@ -44,42 +45,46 @@ func Run(args []string) error {
 			}
 
 		case Decrypt:
-			switch fileMode {
-			case File:
+			switch quantumLockMode {
+			case yubase.File:
 				if !hasDataExtension {
 					return errors.New("wrong file extension found during decryption")
 				}
 
-				err := decryptFile(arg, baseFile, fileMode)
+				err := decryptFile(arg, baseFile, quantumLockMode)
 				if err != nil {
 					return err
 				}
 
-			case Dir:
+			case yubase.Dir:
 				err := decryptFolderContent(arg)
 				if err != nil {
 					return err
 				}
+			case yubase.String:
+				return errors.New("wrong quantum lock mode found during decryption")
 			}
 
 		case Encrypt:
 
-			switch fileMode {
-			case File:
+			switch quantumLockMode {
+			case yubase.File:
 				if hasDataExtension {
 					return errors.New("can not encrypt an already encrypted file")
 				}
 
-				err := encryptFile(arg, baseFile, fileMode)
+				err := encryptFile(arg, baseFile, quantumLockMode)
 				if err != nil {
 					return err
 				}
 
-			case Dir:
+			case yubase.Dir:
 				err := encryptFolderContent(arg)
 				if err != nil {
 					return err
 				}
+			case yubase.String:
+				return errors.New("wrong quantum lock mode found during encryption")
 			}
 		}
 	}

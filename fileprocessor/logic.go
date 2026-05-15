@@ -15,7 +15,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func encryptFile(arg string, baseFile string, fileType FileType) error {
+func encryptFile(arg string, baseFile string, fileType yubase.QuantumLockType) error {
 
 	recipient := *config.FlagRecipient
 
@@ -60,10 +60,10 @@ func encryptFolderContent(folderPath string) error {
 
 	for _, entry := range entries {
 		var baseFile = entry.Name()
-		if strings.HasSuffix(baseFile, config.DataExtension) {
+		if strings.HasSuffix(baseFile, yubase.FileGuardianDataExtension) {
 			continue
 		}
-		err := encryptFile(folderPath+baseFile, baseFile, File)
+		err := encryptFile(folderPath+baseFile, baseFile, yubase.File)
 		if err != nil {
 			return err
 		}
@@ -72,7 +72,7 @@ func encryptFolderContent(folderPath string) error {
 	return nil
 }
 
-func decryptFile(arg string, baseFile string, fileType FileType) error {
+func decryptFile(arg string, baseFile string, fileType yubase.QuantumLockType) error {
 	// fetch entry
 	resp, err := sendRequest(baseFile, fileType, config.StorageContext)
 	if err != nil {
@@ -118,10 +118,10 @@ func decryptFolderContent(folderPath string) error {
 
 	for _, entry := range entries {
 		var baseFile = entry.Name()
-		if !strings.HasSuffix(baseFile, config.DataExtension) {
+		if !strings.HasSuffix(baseFile, yubase.FileGuardianDataExtension) {
 			continue
 		}
-		err := decryptFile(folderPath+baseFile, baseFile, File)
+		err := decryptFile(folderPath+baseFile, baseFile, yubase.File)
 		if err != nil {
 			return err
 		}
