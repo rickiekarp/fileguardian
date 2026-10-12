@@ -22,6 +22,7 @@ func Encrypt(src string, dst string, recipient string) error {
 	cmdResp := gomain.ExecuteWithOptions(
 		opts,
 		"gpg",
+		"--yes", // overwrite an existing file
 		"--output", outDir+dst,
 		"--encrypt",
 		"--recipient", recipient,
