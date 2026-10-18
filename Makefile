@@ -8,6 +8,10 @@ BUILD_PATH=build
 clean:
 	rm -rf build
 
+.PHONY: test
+test:
+	$(GOTEST) -v ./...
+
 buildAMD64:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
 	go build \

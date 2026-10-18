@@ -12,6 +12,7 @@ import (
 )
 
 func main() {
+	flag.Parse()
 
 	if *config.PrintHelp {
 		gomain.PrintUsageAndExit()

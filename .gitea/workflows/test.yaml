@@ -1,0 +1,27 @@
+name: Test
+run-name: Running tests
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  go-test:
+    runs-on: ubuntu-26.04
+    env:
+      GOPRIVATE: git.rickiekarp.net/*
+      GIT_CONFIG_COUNT: "1"
+      GIT_CONFIG_KEY_0: url.https://x-access-token:${{ secrets.GO_MOD_TOKEN }}@git.rickiekarp.net/.insteadOf
+      GIT_CONFIG_VALUE_0: https://git.rickiekarp.net/
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ gitea.event_name }} event."
+      - name: Send chronicle log
+        run: 'chroniclesend "workflow started: event=${{ gitea.event_name }} branch=${{ gitea.ref }} repo=${{ gitea.repository }}"'
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Run tests
+        run: make test
+      - name: Send chronicle log
+        run: 'chroniclesend "workflow finished: event=${{ gitea.event_name }} branch=${{ gitea.ref }} repo=${{ gitea.repository }} status=${{ job.status }}"'
+      - name: Send chronicle log on failure
+        if: failure()
+        run: 'chroniclesend "workflow failed: event=${{ gitea.event_name }} branch=${{ gitea.ref }} repo=${{ gitea.repository }} status=${{ job.status }}" 3'

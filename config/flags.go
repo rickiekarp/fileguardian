@@ -17,5 +17,4 @@ var FlagCheck = flag.Bool("c", false, "only checks if the given file exists on t
 
 func init() {
 	flag.StringVar(&StorageContext, "context", "default", "storage table context")
-	flag.Parse()
 }
